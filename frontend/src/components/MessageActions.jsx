@@ -65,9 +65,11 @@ const MessageActions = ({ message, onEdit, onDelete }) => {
 
       {/* Time limit notification */}
       {showTimeLimitMessage && (
-        <div className={`fixed top-20 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded-lg shadow-lg z-50 animate-fade-in ${getNotificationColors()}`}>
-          <div className="flex items-center gap-2">
-            <span className="text-sm font-medium">{timeLimitText}</span>
+        <div className="fixed top-20 left-0 right-0 flex justify-center z-50">
+          <div className={`px-4 py-2 rounded-lg shadow-lg animate-fade-in ${getNotificationColors()}`}>
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-medium">{timeLimitText}</span>
+            </div>
           </div>
         </div>
       )}
