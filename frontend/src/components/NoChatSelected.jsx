@@ -1,4 +1,4 @@
-import { MessageSquare } from "lucide-react";
+import { MessageSquareText } from "lucide-react";
 import { useEffect, useState } from "react";
 
 const NoChatSelected = () => {
@@ -22,7 +22,7 @@ const NoChatSelected = () => {
               className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center
              justify-center animate-bounce"
             >
-              <MessageSquare className={`w-8 h-8 ${theme === "dark" ? "text-gray-100" : "text-primary"}`} />
+              <MessageSquareText className={`w-8 h-8 ${theme === "dark" ? "text-gray-100" : "text-primary"}`} />
             </div>
           </div>
         </div>
