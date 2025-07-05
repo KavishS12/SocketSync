@@ -40,6 +40,7 @@ export const signup = async (req, res) => {
                 name: newUser.name,
                 email: newUser.email,
                 profilePic: newUser.profilePic,
+                createdAt: newUser.createdAt,
             }
         });
     } else {
@@ -77,6 +78,7 @@ export const login = async (req, res) => {
             name: user.name,
             email: user.email,
             profilePic: user.profilePic,
+            createdAt: user.createdAt,
         }
     });
 
@@ -119,7 +121,13 @@ export const updateProfile = async (req, res) => {
 
     res.status(200).json({
       message: "Profile updated successfully",
-      user: updatedUser
+      user: {
+        _id: updatedUser._id,
+        name: updatedUser.name,
+        email: updatedUser.email,
+        profilePic: updatedUser.profilePic,
+        createdAt: updatedUser.createdAt,
+      }
     });
 
   } catch (error) {
