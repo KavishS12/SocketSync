@@ -24,13 +24,14 @@ export default {
           "error": "#e57373",
         },
         dark: {
-          "primary": "#23272f", // very dark gray
-          "secondary": "#2d333b", // dark gray
-          "accent": "#3a3f4b", // slightly lighter dark
-          "neutral": "#1a1d23", // almost black
-          "base-100": "#181a20", // almost black
-          "base-200": "#23272f", // very dark gray
-          "base-300": "#2d333b", // dark gray
+          "primary": "#1a1a1a", // very dark black
+          "secondary": "#2a2a2a", // dark gray
+          "accent": "#3a3a3a", // medium dark gray
+          "neutral": "#0a0a0a", // almost pure black
+          "base-100": "#0a0a0a", // almost pure black background
+          "base-200": "#1a1a1a", // very dark black
+          "base-300": "#2a2a2a", // dark gray
+          "base-content": "#ffffff", // white text
           "info": "#4f8cff",
           "success": "#3ad29f",
           "warning": "#ffb454",
