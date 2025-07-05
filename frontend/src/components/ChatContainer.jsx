@@ -170,7 +170,6 @@ const ChatContainer = () => {
                       message={message}
                       onEdit={handleEditMessage}
                       onDelete={handleDeleteMessage}
-                      onClose={() => setSelectedMessage(null)}
                     />
                   )}
                 </div>

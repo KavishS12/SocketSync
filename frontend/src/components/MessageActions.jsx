@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { Edit, Trash2, X } from 'lucide-react';
+import { Edit, Trash2 } from 'lucide-react';
 import { canEditMessage, canDeleteMessage } from '../lib/utils';
 
-const MessageActions = ({ message, onEdit, onDelete, onClose }) => {
+const MessageActions = ({ message, onEdit, onDelete }) => {
   const [showTimeLimitMessage, setShowTimeLimitMessage] = useState(false);
   const [timeLimitText, setTimeLimitText] = useState('');
 
@@ -42,13 +42,6 @@ const MessageActions = ({ message, onEdit, onDelete, onClose }) => {
           title="Delete message"
         >
           <Trash2 className="w-3 h-3" />
-        </button>
-        <button
-          onClick={onClose}
-          className="p-1.5 hover:bg-base-200 rounded transition-colors"
-          title="Close"
-        >
-          <X className="w-3 h-3" />
         </button>
       </div>
 
