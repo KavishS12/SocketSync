@@ -65,5 +65,21 @@ export const useChatStore = create((set, get) => ({
     socket.off("newMessage");
   },
 
+  updateMessage: (messageId, updatedMessage) => {
+    const { messages } = get();
+    const updatedMessages = messages.map(msg => 
+      msg._id === messageId ? updatedMessage : msg
+    );
+    set({ messages: updatedMessages });
+  },
+
+  deleteMessage: (messageId) => {
+    const { messages } = get();
+    const updatedMessages = messages.map(msg => 
+      msg._id === messageId ? { ...msg, isDeleted: true, text: "This message was deleted" } : msg
+    );
+    set({ messages: updatedMessages });
+  },
+
   setSelectedUser: (selectedUser) => set({ selectedUser }),
 }));

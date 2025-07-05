@@ -1,11 +1,14 @@
 import { useChatStore } from "../store/useChatStore";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import ChatHeader from "./ChatHeader";
 import MessageInput from "./MessageInput";
 import MessageSkeleton from "./skeletons/MessageSkeleton";
+import MessageActions from "./MessageActions";
+import MessageEditModal from "./MessageEditModal";
 import { useAuthStore } from "../store/useAuthStore";
 import { formatMessageTime, getDateLabel } from "../lib/utils";
+import { axiosInstance } from "../lib/axios";
 
 const ChatContainer = () => {
   const {
@@ -15,9 +18,13 @@ const ChatContainer = () => {
     selectedUser,
     subscribeToMessages,
     unsubscribeFromMessages,
+    updateMessage,
+    deleteMessage,
   } = useChatStore();
   const { authUser } = useAuthStore();
   const messageEndRef = useRef(null);
+  const [selectedMessage, setSelectedMessage] = useState(null);
+  const [editingMessage, setEditingMessage] = useState(null);
 
   useEffect(() => {
     getMessages(selectedUser._id);
@@ -27,11 +34,54 @@ const ChatContainer = () => {
     return () => unsubscribeFromMessages();
   }, [selectedUser._id, getMessages, subscribeToMessages, unsubscribeFromMessages]);
 
+  // Listen for message edit/delete events
+  useEffect(() => {
+    const socket = useAuthStore.getState().socket;
+    
+    socket.on("messageEdited", (updatedMessage) => {
+      updateMessage(updatedMessage._id, updatedMessage);
+    });
+
+    socket.on("messageDeleted", (deletedMessage) => {
+      updateMessage(deletedMessage._id, deletedMessage);
+    });
+
+    return () => {
+      socket.off("messageEdited");
+      socket.off("messageDeleted");
+    };
+  }, [updateMessage]);
+
   useEffect(() => {
     if (messageEndRef.current && messages) {
       messageEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [messages]);
+
+  const handleEditMessage = (message) => {
+    setEditingMessage(message);
+    setSelectedMessage(null);
+  };
+
+  const handleDeleteMessage = async (messageId) => {
+    try {
+      const response = await axiosInstance.delete(`/message/delete/${messageId}`);
+      deleteMessage(messageId);
+      setSelectedMessage(null);
+    } catch (error) {
+      console.error("Error deleting message:", error);
+    }
+  };
+
+  const handleSaveEdit = async (messageId, newText) => {
+    try {
+      const response = await axiosInstance.put(`/message/edit/${messageId}`, { text: newText });
+      updateMessage(messageId, response.data);
+      setEditingMessage(null);
+    } catch (error) {
+      console.error("Error editing message:", error);
+    }
+  };
 
   if (isMessagesLoading) {
     return (
@@ -71,8 +121,10 @@ const ChatContainer = () => {
             elements.push(
               <div
                 key={message._id}
-                className={`chat ${message.senderId === authUser._id ? "chat-end" : "chat-start"}`}
+                className={`chat ${message.senderId === authUser._id ? "chat-end" : "chat-start"} relative group`}
                 ref={messageEndRef}
+                onMouseEnter={() => message.senderId === authUser._id && setSelectedMessage(message._id)}
+                onMouseLeave={() => setSelectedMessage(null)}
               >
                 <div className=" chat-image avatar">
                   <div className="size-10 rounded-full border">
@@ -87,13 +139,13 @@ const ChatContainer = () => {
                   </div>
                 </div>
                 <div
-                  className={`chat-bubble flex flex-col ${
+                  className={`chat-bubble flex flex-col relative ${
                     message.senderId === authUser._id
                       ? "bg-primary text-primary-content"
                       : "bg-base-200 text-base-content"
-                  }`}
+                  } ${message.isDeleted ? "opacity-60 italic" : ""}`}
                 >
-                  {message.image && (
+                  {message.image && !message.isDeleted && (
                     <img
                       src={message.image}
                       alt="Attachment"
@@ -101,9 +153,26 @@ const ChatContainer = () => {
                     />
                   )}
                   {message.text && <p>{message.text}</p>}
-                  <span className="text-[10px] mt-1.5 opacity-60 self-end">
-                    {formatMessageTime(message.createdAt).split(' ').slice(1).join(' ')}
-                  </span>
+                  <div className="flex items-center justify-between mt-1.5">
+                    <div className="flex items-center gap-2">
+                      {message.isEdited && (
+                        <span className="text-[10px] opacity-60">edited</span>
+                      )}
+                    </div>
+                    <span className="text-[10px] opacity-60">
+                      {formatMessageTime(message.createdAt).split(' ').slice(1).join(' ')}
+                    </span>
+                  </div>
+                  
+                  {/* Action buttons for sender's messages */}
+                  {selectedMessage === message._id && message.senderId === authUser._id && !message.isDeleted && (
+                    <MessageActions
+                      message={message}
+                      onEdit={handleEditMessage}
+                      onDelete={handleDeleteMessage}
+                      onClose={() => setSelectedMessage(null)}
+                    />
+                  )}
                 </div>
               </div>
             );
@@ -116,6 +185,15 @@ const ChatContainer = () => {
       </div>
 
       <MessageInput />
+      
+      {/* Edit Message Modal */}
+      {editingMessage && (
+        <MessageEditModal
+          message={editingMessage}
+          onSave={handleSaveEdit}
+          onCancel={() => setEditingMessage(null)}
+        />
+      )}
     </div>
   );
 };

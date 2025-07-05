@@ -38,3 +38,17 @@ export function getDateLabel(date) {
   if (isYesterday) return 'Yesterday';
   return `${day}-${month}-${year}`;
 }
+
+export function canEditMessage(messageDate) {
+  const messageTime = new Date(messageDate).getTime();
+  const currentTime = Date.now();
+  const oneMinute = 60 * 1000; // 1 minute in milliseconds
+  return currentTime - messageTime <= oneMinute;
+}
+
+export function canDeleteMessage(messageDate) {
+  const messageTime = new Date(messageDate).getTime();
+  const currentTime = Date.now();
+  const fiveMinutes = 5 * 60 * 1000; // 5 minutes in milliseconds
+  return currentTime - messageTime <= fiveMinutes;
+}
