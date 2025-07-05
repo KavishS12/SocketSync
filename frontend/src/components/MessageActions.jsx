@@ -1,10 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Edit, Trash2 } from 'lucide-react';
 import { canEditMessage, canDeleteMessage } from '../lib/utils';
 
 const MessageActions = ({ message, onEdit, onDelete }) => {
   const [showTimeLimitMessage, setShowTimeLimitMessage] = useState(false);
   const [timeLimitText, setTimeLimitText] = useState('');
+  const [theme, setTheme] = useState(document.documentElement.getAttribute("data-theme") || "light");
+
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      setTheme(document.documentElement.getAttribute("data-theme") || "light");
+    });
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+    return () => observer.disconnect();
+  }, []);
 
   const handleEdit = () => {
     if (canEditMessage(message.createdAt)) {
@@ -23,6 +32,15 @@ const MessageActions = ({ message, onEdit, onDelete }) => {
       setTimeLimitText('Messages can only be deleted within 5 minutes of sending');
       setShowTimeLimitMessage(true);
       setTimeout(() => setShowTimeLimitMessage(false), 3000);
+    }
+  };
+
+  // Theme-specific colors for the notification
+  const getNotificationColors = () => {
+    if (theme === "dark") {
+      return "bg-base-200 text-base-content border border-base-300";
+    } else {
+      return "bg-base-300 text-base-content border border-base-300";
     }
   };
 
@@ -47,7 +65,7 @@ const MessageActions = ({ message, onEdit, onDelete }) => {
 
       {/* Time limit notification */}
       {showTimeLimitMessage && (
-        <div className="fixed top-20 left-1/2 transform -translate-x-1/2 bg-error text-error-content px-4 py-2 rounded-lg shadow-lg z-50 animate-fade-in">
+        <div className={`fixed top-20 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded-lg shadow-lg z-50 animate-fade-in ${getNotificationColors()}`}>
           <div className="flex items-center gap-2">
             <span className="text-sm font-medium">{timeLimitText}</span>
           </div>
