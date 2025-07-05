@@ -39,6 +39,9 @@ export const useChatStore = create((set, get) => ({
     try {
       const res = await axiosInstance.post(`/message/send-message/${selectedUser._id}`, messageData);
       set({ messages: [...messages, res.data] });
+      
+      // Update the last message time for the selected user
+      get().updateUserLastMessageTime(selectedUser._id, res.data.createdAt);
     } catch (error) {
       toast.error(error.response.data.message);
     }
@@ -57,6 +60,9 @@ export const useChatStore = create((set, get) => ({
       set({
         messages: [...get().messages, newMessage],
       });
+      
+      // Update the last message time for the sender
+      get().updateUserLastMessageTime(newMessage.senderId, newMessage.createdAt);
     });
   },
 
@@ -79,6 +85,27 @@ export const useChatStore = create((set, get) => ({
       msg._id === messageId ? { ...msg, isDeleted: true, text: "This message was deleted" } : msg
     );
     set({ messages: updatedMessages });
+  },
+
+  updateUserLastMessageTime: (userId, lastMessageTime) => {
+    const { users } = get();
+    const updatedUsers = users.map(user => 
+      user._id === userId 
+        ? { ...user, lastMessageTime: lastMessageTime }
+        : user
+    );
+    
+    // Re-sort users by last message time
+    const sortedUsers = updatedUsers.sort((a, b) => {
+      if (!a.lastMessageTime && !b.lastMessageTime) {
+        return a.name.localeCompare(b.name);
+      }
+      if (!a.lastMessageTime) return 1;
+      if (!b.lastMessageTime) return -1;
+      return new Date(b.lastMessageTime) - new Date(a.lastMessageTime);
+    });
+    
+    set({ users: sortedUsers });
   },
 
   setSelectedUser: (selectedUser) => set({ selectedUser }),

@@ -20,6 +20,26 @@ const Sidebar = () => {
     ? users.filter((user) => onlineUsers.includes(user._id))
     : users;
 
+  // Function to format last message time
+  const formatLastMessageTime = (lastMessageTime) => {
+    if (!lastMessageTime) return "No messages";
+    
+    const now = new Date();
+    const messageTime = new Date(lastMessageTime);
+    const diffInHours = (now - messageTime) / (1000 * 60 * 60);
+    
+    if (diffInHours < 1) {
+      const diffInMinutes = Math.floor((now - messageTime) / (1000 * 60));
+      return diffInMinutes < 1 ? "Just now" : `${diffInMinutes}m ago`;
+    } else if (diffInHours < 24) {
+      return `${Math.floor(diffInHours)}h ago`;
+    } else if (diffInHours < 168) { // 7 days
+      return `${Math.floor(diffInHours / 24)}d ago`;
+    } else {
+      return messageTime.toLocaleDateString();
+    }
+  };
+
   if (isUsersLoading) return <SidebarSkeleton />;
 
   return (
@@ -70,10 +90,11 @@ const Sidebar = () => {
             </div>
 
             {/* User info - only visible on larger screens */}
-            <div className="hidden lg:block text-left min-w-0">
+            <div className="hidden lg:block text-left min-w-0 flex-1">
               <div className="font-medium truncate">{user.name}</div>
-              <div className="text-sm text-zinc-400">
-                {onlineUsers.includes(user._id) ? "Online" : "Offline"}
+              <div className="text-sm text-zinc-400 flex items-center justify-between">
+                <span>{onlineUsers.includes(user._id) ? "Online" : "Offline"}</span>
+                <span className="text-xs">{formatLastMessageTime(user.lastMessageTime)}</span>
               </div>
             </div>
           </button>

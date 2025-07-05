@@ -6,8 +6,38 @@ import cloudinary from "../lib/cloudinary.js";
 export const getUsers = async (req, res) => {
   try {
     const loggedInUserId = req.user._id;
+    
+    // Get all users except the logged-in user
     const users = await User.find({ _id: { $ne: loggedInUserId } }).select("-password");
-    res.status(200).json(users);
+    
+    // Get the last message timestamp for each user
+    const usersWithLastMessage = await Promise.all(
+      users.map(async (user) => {
+        const lastMessage = await Message.findOne({
+          $or: [
+            { senderId: loggedInUserId, receiverId: user._id },
+            { senderId: user._id, receiverId: loggedInUserId }
+          ]
+        }).sort({ createdAt: -1 }).select('createdAt');
+        
+        return {
+          ...user.toObject(),
+          lastMessageTime: lastMessage ? lastMessage.createdAt : null
+        };
+      })
+    );
+    
+    // Sort users by last message time (most recent first), then by name for users without messages
+    const sortedUsers = usersWithLastMessage.sort((a, b) => {
+      if (!a.lastMessageTime && !b.lastMessageTime) {
+        return a.name.localeCompare(b.name);
+      }
+      if (!a.lastMessageTime) return 1;
+      if (!b.lastMessageTime) return -1;
+      return new Date(b.lastMessageTime) - new Date(a.lastMessageTime);
+    });
+    
+    res.status(200).json(sortedUsers);
   } catch (error) {
     console.error("Error fetching users:", error.message);
     res.status(500).json({ message: "Internal server error" });
