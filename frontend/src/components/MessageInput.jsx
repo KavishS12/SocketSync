@@ -92,8 +92,9 @@ const MessageInput = () => {
 
           <button
             type="button"
-            className={`hidden sm:flex btn btn-circle
-                     ${imagePreview ? "text-emerald-500" : "text-zinc-400"}`}
+            className={`hidden sm:flex btn rounded-lg btn-primary ${
+              imagePreview ? "text-emerald-500" : ""
+            }`}
             onClick={() => fileInputRef.current?.click()}
           >
             <Image size={20} />
@@ -101,8 +102,16 @@ const MessageInput = () => {
         </div>
         <button
           type="submit"
-          className="btn btn-primary btn-sm btn-circle"
-          disabled={isSending || (!text.trim() && !imagePreview)}
+          className={`btn rounded-lg btn-primary ${
+            isSending ? "opacity-50 cursor-not-allowed" : 
+            (!text.trim() && !imagePreview) ? "opacity-70" : ""
+          }`}
+          onClick={(e) => {
+            if (!text.trim() && !imagePreview) {
+              e.preventDefault();
+              return;
+            }
+          }}
         >
           {isSending ? (
             <svg className="animate-spin h-5 w-5 text-zinc-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
