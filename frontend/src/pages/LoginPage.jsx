@@ -33,12 +33,6 @@ const LoginPage = () => {
           {/* Logo */}
           <div className="text-center mb-8">
             <div className="flex flex-col items-center gap-2 group">
-              <div
-                className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/20
-              transition-colors"
-              >
-                <MessageSquareText className={`w-6 h-6 ${theme === "dark" ? "text-gray-100" : "text-primary"}`} />
-              </div>
               <h1 className="text-2xl font-bold mt-2">Welcome Back</h1>
               <p className="text-base-content/60">Sign in to your account</p>
             </div>
@@ -104,6 +98,16 @@ const LoginPage = () => {
               )}
             </button>
           </form>
+
+          <button
+            type="button"
+            className={`w-full flex items-center justify-center gap-2 border border-gray-300 rounded-md py-2 mt-4 shadow-sm transition 
+              ${theme === 'light' ? 'bg-black text-white hover:bg-gray-900' : 'bg-white text-gray-700 hover:bg-gray-50'}`}
+            onClick={() => window.location.href = 'http://localhost:5000/api/auth/google'}
+          >
+            <img src="/google.png" alt="Google" className="w-5 h-5" />
+            <span className="font-medium">Sign in with Google</span>
+          </button>
 
           <div className="text-center">
             <p className="text-base-content/60">

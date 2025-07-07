@@ -2,6 +2,8 @@ import express from 'express';
 import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
+import session from 'express-session';
+import passport from './lib/passport.js';
 
 import { connectDB } from './lib/db.js';
 import authRoutes from './routes/authRoutes.js';
@@ -19,6 +21,15 @@ app.use(cors({
   origin: "http://localhost:5173", // frontend URL
   credentials: true,
 }));
+
+app.use(session({
+  secret: process.env.SESSION_SECRET || 'your_default_secret',
+  resave: false,
+  saveUninitialized: false,
+  cookie: { secure: false, httpOnly: true },
+}));
+app.use(passport.initialize());
+app.use(passport.session());
 
 //test route
 app.get('/',(req,res) => {

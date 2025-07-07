@@ -44,16 +44,10 @@ const SignUpPage = () => {
 
   return (
     <div className="min-h-screen grid lg:grid-cols-1">
-      <div className="flex flex-col justify-center items-center p-6 sm:p-12">
+      <div className="flex flex-col justify-center items-center p-6 sm:p-12 mt-8">
         <div className="w-full max-w-md space-y-8">
           <div className="text-center mb-8">
             <div className="flex flex-col items-center gap-2 group">
-              <div
-                className="size-12 rounded-xl bg-primary/10 flex items-center justify-center 
-              group-hover:bg-primary/20 transition-colors"
-              >
-                <MessageSquareText className={`size-6 ${theme === "dark" ? "text-gray-100" : "text-primary"}`} />
-              </div>
               <h1 className="text-2xl font-bold mt-2">Get started</h1>
               <p className="text-base-content/60">Register to create your account</p>
             </div>
@@ -136,6 +130,16 @@ const SignUpPage = () => {
               )}
             </button>
           </form>
+
+          <button
+            type="button"
+            className={`w-full flex items-center justify-center gap-2 border border-gray-300 rounded-md py-2 mt-4 shadow-sm transition 
+              ${theme === 'light' ? 'bg-black text-white hover:bg-gray-900' : 'bg-white text-gray-700 hover:bg-gray-50'}`}
+            onClick={() => window.location.href = 'http://localhost:5000/api/auth/google'}
+          >
+            <img src="/google.png" alt="Google" className="w-5 h-5" />
+            <span className="font-medium">Sign up with Google</span>
+          </button>
 
           <div className="text-center">
             <p className="text-base-content/60">
