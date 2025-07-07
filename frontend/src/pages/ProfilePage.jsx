@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useAuthStore } from "../store/useAuthStore";
-import { Camera, Mail, User, Calendar, XCircle } from "lucide-react";
+import { Camera, Mail, User, Calendar, XCircle, Loader2 } from "lucide-react";
 
 const ProfilePage = () => {
   const { authUser, isUpdatingProfile, updateProfile } = useAuthStore();
@@ -48,6 +48,13 @@ const ProfilePage = () => {
                     alt="Profile"
                     className="size-40 rounded-full object-cover border-4 border-base-300 shadow-lg"
                   />
+                  {isUpdatingProfile && (
+                    <div className="absolute inset-0 flex items-center justify-center z-20">
+                      <div className="w-14 h-14 bg-black/60 rounded-full flex items-center justify-center">
+                        <Loader2 className="w-7 h-7 text-white animate-spin" />
+                      </div>
+                    </div>
+                  )}
                   <label
                     htmlFor="avatar-upload"
                     className={`
