@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useAuthStore } from "../store/useAuthStore";
-import { Camera, Mail, User, Calendar } from "lucide-react";
+import { Camera, Mail, User, Calendar, XCircle } from "lucide-react";
 
 const ProfilePage = () => {
   const { authUser, isUpdatingProfile, updateProfile } = useAuthStore();
@@ -19,6 +19,11 @@ const ProfilePage = () => {
       setSelectedImg(base64Image);
       await updateProfile({ profilePic: base64Image });
     };
+  };
+
+  const handleRemoveProfilePic = async () => {
+    setSelectedImg(null);
+    await updateProfile({ profilePic: "" });
   };
 
   return (
@@ -63,6 +68,17 @@ const ProfilePage = () => {
                       disabled={isUpdatingProfile}
                     />
                   </label>
+                  {/* X icon for removing profile picture */}
+                  {(authUser.profilePic || selectedImg) && (
+                    <button
+                      className="absolute top-2 right-2 bg-primary hover:bg-primary/80 text-primary-content rounded-full p-1.5 shadow disabled:opacity-50 z-10"
+                      onClick={handleRemoveProfilePic}
+                      disabled={isUpdatingProfile}
+                      title="Remove profile picture"
+                    >
+                      <XCircle className="w-6 h-6" />
+                    </button>
+                  )}
                 </div>
                 
                 <p className="text-sm text-base-content/60 mt-4">

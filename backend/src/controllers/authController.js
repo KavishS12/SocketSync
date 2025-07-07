@@ -108,8 +108,27 @@ export const updateProfile = async (req, res) => {
     const {profilePic} = req.body;
     const userId = req.user._id;
 
+    if (profilePic === "") {
+      // Remove profile picture
+      const updatedUser = await User.findByIdAndUpdate(
+        userId,
+        { profilePic: "" },
+        { new: true }
+      );
+      return res.status(200).json({
+        message: "Profile picture removed successfully",
+        user: {
+          _id: updatedUser._id,
+          name: updatedUser.name,
+          email: updatedUser.email,
+          profilePic: updatedUser.profilePic,
+          createdAt: updatedUser.createdAt,
+        }
+      });
+    }
+
     if(!profilePic) {
-      return res.status(400).json({message: "Please provide a profile pic"});
+      return res.status(400).json({message: "Please provide a profile pic or empty string to remove."});
     }
 
     const uploadResponse = await cloudinary.uploader.upload(profilePic);
