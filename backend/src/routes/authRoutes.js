@@ -14,7 +14,7 @@ router.put('/update-profile', protectRoute, updateProfile);
 
 router.get('/check-auth', protectRoute, checkAuth);
 
-router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'], prompt: 'consent select_account' }));
 
 router.get('/google/callback',
   passport.authenticate('google', {
